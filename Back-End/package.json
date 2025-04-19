@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mysql2": "^3.14.0"
+  },
+  "name": "back-end",
+  "version": "1.0.0",
+  "description": "back-end do projeto minichat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gekyume",
+  "license": "ISC",
+  "keywords": []
+}
