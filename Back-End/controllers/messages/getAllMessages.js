@@ -1,4 +1,4 @@
-const db = require('../../database');
+const db = require('../../configuration/database');
 
 module.exports = (req, res) => {
     db.query('SELECT * FROM messages ORDER BY sent_at DESC', (err, results) => {
