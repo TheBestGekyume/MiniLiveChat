@@ -1,10 +1,10 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const db = require('../configuration/database'); // sua conexão com MySQL
+const db = require('../configuration/database');
 const router = express.Router();
 
-const secret = process.env.JWT_SECRET;  // Pega o segredo do .env
+const secret = process.env.JWT_SECRET;
 
 
 router.post('/login', async (req, res) => {
@@ -12,18 +12,29 @@ router.post('/login', async (req, res) => {
 
     db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
         if (err) return res.status(500).json({ error: 'Erro no servidor' });
-        if (results.length === 0) return res.status(401).json({ error: 'Usuário não encontrado' });
+        if (results.length === 0) return res.status(401).json({ error: 'Usuário não encontrado!' });
 
         const user = results[0];
-     
         const match = await bcrypt.compare(password, user.password);
-        
-        if (!match) return res.status(401).json({ error: 'Senha incorreta' });
 
-        const token = jwt.sign({ id: user.id, name: user.name, email: user.email }, secret, { expiresIn: '1h' });
+        if (!match) return res.status(401).json({ error: 'Senha incorreta!' });
 
-        res.json({ token });
+        const token = jwt.sign(
+            { id: user.id, name: user.username, email: user.email },
+            secret,
+            { expiresIn: "1h" }
+        );
+
+        res.json({
+            token,
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email
+            }
+        });
     });
 });
+
 
 module.exports = router;
