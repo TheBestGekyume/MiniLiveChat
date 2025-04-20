@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const secret = 'seuSegredoSuperSeguro'; // Ideal usar dotenv
+const secret = JWT_SECRET;
 
 function authMiddleware(req, res, next) {
     const token = req.headers['authorization'];
