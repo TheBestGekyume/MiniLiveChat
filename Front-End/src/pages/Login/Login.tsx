@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useState, useContext } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import "./login.scss";
+import { AuthContext } from "../../context/AuthContext";
 
 function Login() {
     let [hasAccount, setHasAccount] = useState(true);
@@ -10,6 +12,9 @@ function Login() {
     let [password, setPassword] = useState("");
     let [error, setError] = useState("");
     const apiUrl = "http://localhost:3000";
+    const navigate = useNavigate();
+
+    const { setAuth } = useContext(AuthContext);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -25,21 +30,14 @@ function Login() {
 
             if (hasAccount) {
                 const { token, user } = response.data;
-                localStorage.setItem("token", token);
-                localStorage.setItem("id", String(user.id));
-                localStorage.setItem("username", String(user.username));
-
-
+                setAuth(token, user.username);
+                navigate("/chat");
             } else {
-                alert("Cadastro realizado com sucesso! Agora faça login.");
+                alert("Cadastro realizado com sucesso!");
                 setHasAccount(true);
             }
         } catch (err: any) {
-            console.error(err);
-            setError(
-                err.response?.data?.error ||
-                    (hasAccount ? "Falha no login." : "Falha no cadastro.")
-            );
+            setError(err.response?.data?.error || "Erro no login ou cadastro.");
         }
     };
 
@@ -54,7 +52,7 @@ function Login() {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     style={{
-                        perspective: 1000, // cria a ilusão de 3D
+                        perspective: 1000,
                         transformStyle: "preserve-3d",
                     }}
                 >

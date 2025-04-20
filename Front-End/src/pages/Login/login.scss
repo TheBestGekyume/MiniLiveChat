@@ -1,3 +1,4 @@
+@use '../../styles/variables.scss';
 #login {
     display: flex;
     flex-direction: column;
@@ -8,7 +9,7 @@
 
     h1 {
         text-align: center;
-        font-size: 5rem;
+        font-size: 4.5rem;
         margin-bottom: 1rem;
     }
 
@@ -43,7 +44,6 @@
                     size: 1.2;
                     border-color: #fff;
                     background-color: #111;
-
                 }
             }
         }
@@ -61,7 +61,7 @@
             transition: 300ms;
             &:hover{
                 background-color: #111;
-                border-color: #66f;
+                border-color: variables.$blue_1;
                 translate: 0px -4px;
             }
         }
