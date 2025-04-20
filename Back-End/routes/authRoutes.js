@@ -15,15 +15,26 @@ router.post('/login', async (req, res) => {
         if (results.length === 0) return res.status(401).json({ error: 'Usuário não encontrado!' });
 
         const user = results[0];
-     
         const match = await bcrypt.compare(password, user.password);
-        
+
         if (!match) return res.status(401).json({ error: 'Senha incorreta!' });
 
-        const token = jwt.sign({ id: user.id, name: user.name, email: user.email }, secret, { expiresIn: "1hr" });
+        const token = jwt.sign(
+            { id: user.id, name: user.username, email: user.email },
+            secret,
+            { expiresIn: "1h" }
+        );
 
-        res.json({ token });
+        res.json({
+            token,
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email
+            }
+        });
     });
 });
+
 
 module.exports = router;

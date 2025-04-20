@@ -19,6 +19,7 @@
         height: auto;
         border-radius: 1rem;
         padding: 2rem;
+        padding-bottom: 1rem;
         background-color: #00000070;
 
         fieldset {
@@ -65,10 +66,26 @@
             }
         }
 
+        .toggle-form{
+            color: #bbb;
+            text-decoration: underline;
+            text-align: center;
+            cursor: pointer;
+            transition: 150ms;
+            margin-bottom: 1rem;
+            padding-top: 1rem;
+
+            &:hover{
+                color:#fff;
+            }
+        }
+
         .error{
             color: red;
             font-size: 0.75rem;
             margin: 0 auto;
         }
+
+        
     }
 }

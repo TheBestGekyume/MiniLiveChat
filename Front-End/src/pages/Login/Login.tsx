@@ -1,11 +1,14 @@
 import { useState } from "react";
 import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
 import "./login.scss";
 
 function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    let [hasAccount, setHasAccount] = useState(true);
+    let [email, setEmail] = useState("");
+    let [username, setUsername] = useState("");
+    let [password, setPassword] = useState("");
+    let [error, setError] = useState("");
     const apiUrl = "http://localhost:3000";
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -13,58 +16,110 @@ function Login() {
         setError("");
 
         try {
-            const response = await axios.post(`${apiUrl}/login`, {
-                email,
-                password,
-            }, {
-                withCredentials: true
-            });
-        
-            const token = response.data.token;
-            localStorage.setItem("token", token);
+            const endpoint = hasAccount ? "/login" : "/user";
+            const response = await axios.post(
+                `${apiUrl}${endpoint}`,
+                { username, email, password },
+                { withCredentials: true }
+            );
 
-            alert("Login realizado com sucesso!");
-            
+            if (hasAccount) {
+                const { token, user } = response.data;
+                localStorage.setItem("token", token);
+                localStorage.setItem("id", String(user.id));
+                localStorage.setItem("username", String(user.username));
+
+
+            } else {
+                alert("Cadastro realizado com sucesso! Agora faça login.");
+                setHasAccount(true);
+            }
         } catch (err: any) {
             console.error(err);
-            setError(err.response?.data?.error || "Falha no login.");
+            setError(
+                err.response?.data?.error ||
+                    (hasAccount ? "Falha no login." : "Falha no cadastro.")
+            );
         }
     };
 
     return (
-        <section id="login">
-            <form>
-                <h1>LOGIN</h1>
+        <div className="login-container">
+            <AnimatePresence mode="wait">
+                <motion.section
+                    key={hasAccount ? "login" : "register"}
+                    id="login"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    style={{
+                        perspective: 1000, // cria a ilusão de 3D
+                        transformStyle: "preserve-3d",
+                    }}
+                >
+                    <form onSubmit={handleSubmit}>
+                        <h1>{hasAccount ? "LOGIN" : "CADASTRO"}</h1>
 
-                <fieldset>
-                    <label htmlFor="email">EMAIL</label>
-                    <input
-                        type="email"
-                        name="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </fieldset>
+                        {!hasAccount && (
+                            <fieldset>
+                                <label htmlFor="username">USERNAME</label>
+                                <input
+                                    type="text"
+                                    name="username"
+                                    id="username"
+                                    value={username}
+                                    onChange={(e) =>
+                                        setUsername(e.target.value)
+                                    }
+                                    required
+                                />
+                            </fieldset>
+                        )}
 
-                <fieldset>
-                    <label htmlFor="password">SENHA</label>
-                    <input
-                        type="password"
-                        name="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </fieldset>
+                        <fieldset>
+                            <label htmlFor="email">EMAIL</label>
+                            <input
+                                type="email"
+                                name="email"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </fieldset>
 
-                <button onClick={handleSubmit}>Acessar</button>
-                {error && <p className="error">{error}</p>}
+                        <fieldset>
+                            <label htmlFor="password">SENHA</label>
+                            <input
+                                type="password"
+                                name="password"
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </fieldset>
 
-            </form>
-        </section>
+                        <button type="submit">
+                            {hasAccount ? "Acessar" : "Cadastrar"}
+                        </button>
+
+                        <p
+                            onClick={() => setHasAccount(!hasAccount)}
+                            className="toggle-form"
+                            style={{ cursor: "pointer" }}
+                        >
+                            {hasAccount
+                                ? "Não tem conta? Cadastre-se"
+                                : "Já tem conta? Faça login"}
+                        </p>
+
+                        {error && <p className="error">{error}</p>}
+                    </form>
+                </motion.section>
+            </AnimatePresence>
+        </div>
     );
 }
 
