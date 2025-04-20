@@ -1,4 +1,4 @@
-const db = require('../../database');
+const db = require('../../configuration/database');
 
 module.exports = (req, res) => {
     const { id } = req.params;

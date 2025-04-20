@@ -1,4 +1,4 @@
-const db = require('../../database');
+const db = require('../../configuration/database');
 
 module.exports = (req, res) => {
     const { user_id, content } = req.body;
