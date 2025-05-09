@@ -7,19 +7,24 @@ import SideBar from "./components/SideBar/SideBar";
 import Settings from "./pages/Settings/Settings";
 
 import "./styles/reset.scss";
+import "./styles/App.scss";
 
 function App() {
     return (
-        <AuthProvider>
-            <BrowserRouter>
-                <SideBar />
-                <Routes>
-                    <Route path="/" element={<Login />} />
-                    <Route path="/chat" element={<Chat />} />
-                    <Route path="/settings" element={<Settings />} />
-                </Routes>
-            </BrowserRouter>
-        </AuthProvider>
+        <section id="app">
+            <AuthProvider>
+                <BrowserRouter>
+                    <SideBar />
+                    <section id="content">
+                        <Routes>
+                            <Route path="/" element={<Login />} />
+                            <Route path="/chat" element={<Chat />} />
+                            <Route path="/settings" element={<Settings />} />
+                        </Routes>
+                    </section>
+                </BrowserRouter>
+            </AuthProvider>
+        </section>
     );
 }
 

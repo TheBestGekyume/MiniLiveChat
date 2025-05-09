@@ -59,7 +59,7 @@ function Settings() {
                         height: { duration: 0.3, ease: "easeInOut" }
                       }}
                       
-                    //   style={{ overflow: "hidden" }}
+                      style={{ height: 0 }}
                     >
                         
                             <form onSubmit={handleSubmit}>
