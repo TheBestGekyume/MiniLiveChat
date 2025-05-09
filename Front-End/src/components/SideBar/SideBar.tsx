@@ -11,32 +11,39 @@ const Sidebar: React.FC = () => {
     return (
         <aside id="sidebar">
             <nav>
-                <NavLink
-                    to="/home"
-                    className={({ isActive }) => isActive ? "nav_link active" : "nav_link"}
-                >
-                    <Home size={24} />
-                    <span>Início</span>
-                </NavLink>
+                <div className="link_container">
+                    <NavLink
+                        to="/home"
+                        className={({ isActive }) =>
+                            isActive ? "nav_link active" : "nav_link"
+                        }
+                    >
+                        <Home size={24} />
+                        <span>Início</span>
+                    </NavLink>
 
-                <NavLink
-                    to="/chat"
-                    className={({ isActive }) => isActive ? "nav_link active" : "nav_link"}
-                >
-                    <MessageSquare size={24} />
-                    <span>Chat Geral</span>
-                </NavLink>
+                    <NavLink
+                        to="/chat"
+                        className={({ isActive }) =>
+                            isActive ? "nav_link active" : "nav_link"
+                        }
+                    >
+                        <MessageSquare size={24} />
+                        <span>Chat Geral</span>
+                    </NavLink>
 
-                <NavLink
-                    to="/settings"
-                    className={({ isActive }) => isActive ? "nav_link active" : "nav_link"}
-                >
-                    <Settings size={24} />
-                    <span>Configurações</span>
-                </NavLink>
-                
+                    <NavLink
+                        to="/settings"
+                        className={({ isActive }) =>
+                            isActive ? "nav_link active" : "nav_link"
+                        }
+                    >
+                        <Settings size={24} />
+                        <span>Configurações</span>
+                    </NavLink>
+                </div>
                 {token && (
-                    <div className="user-info">
+                    <div className="user_info">
                         <CircleUserRound className="user_icon" />
                         <p>{username}</p>
                     </div>

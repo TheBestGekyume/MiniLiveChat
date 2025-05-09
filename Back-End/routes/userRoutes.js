@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+
 // Importar as funções de controller
 const createUser = require('../controllers/users/createUser');
 const getAllUsers = require('../controllers/users/getAllUsers');

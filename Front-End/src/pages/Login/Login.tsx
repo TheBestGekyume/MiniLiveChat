@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
-import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import "./login.scss";
 import { AuthContext } from "../../context/AuthContext";
+import axios from "axios";
+import "./login.scss";
+
 
 function Login() {
     let [hasAccount, setHasAccount] = useState(true);
@@ -29,8 +30,8 @@ function Login() {
             );
 
             if (hasAccount) {
-                const { token, user } = response.data;
-                setAuth(token, user.username);
+                const { token, user} = response.data;
+                setAuth(token, user.username, user.id);
                 navigate("/chat");
             } else {
                 alert("Cadastro realizado com sucesso!");
