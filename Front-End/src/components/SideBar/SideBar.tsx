@@ -42,12 +42,24 @@ const Sidebar: React.FC = () => {
                         <span>Configurações</span>
                     </NavLink>
                 </div>
-                {token && (
-                    <div className="user_info">
-                        <CircleUserRound className="user_icon" />
+
+                {/* <div className="user_info">
+                    <CircleUserRound className="user_icon" />
+                    <p>{username}</p>
+                </div> */}
+
+                <div className="user_info">
+                    <CircleUserRound
+                        className={`user_icon${!token ? "_unauthenticated" : "" }`}
+                    />
+                    {token ? (
                         <p>{username}</p>
-                    </div>
-                )}
+                    ) : (
+                        <NavLink to="/login">
+                            <p>Login</p>
+                        </NavLink>
+                    )}
+                </div>
             </nav>
         </aside>
     );

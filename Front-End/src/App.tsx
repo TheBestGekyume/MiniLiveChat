@@ -17,7 +17,7 @@ function App() {
                     <SideBar />
                     <section id="content">
                         <Routes>
-                            <Route path="/" element={<Login />} />
+                            <Route path="/login" element={<Login />} />
                             <Route path="/chat" element={<Chat />} />
                             <Route path="/settings" element={<Settings />} />
                         </Routes>

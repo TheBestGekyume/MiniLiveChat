@@ -56,9 +56,17 @@
             gap: 1rem;
 
             .user_icon {
+                opacity: 1;
                 margin: 0 auto;
                 color: variables.$blue_1;
                 scale: 2;
+
+                &_unauthenticated {
+                    opacity: 0.2;
+                    margin: 0 auto;
+                    color: variables.$blue_1;
+                    scale: 2;
+                }
             }
 
             p {
