@@ -5,6 +5,7 @@ import Chat from "./pages/Chat/Chat";
 import Login from "./pages/Login/Login";
 import SideBar from "./components/SideBar/SideBar";
 import Settings from "./pages/Settings/Settings";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 import "./styles/reset.scss";
 import "./styles/App.scss";
@@ -18,8 +19,24 @@ function App() {
                     <section id="content">
                         <Routes>
                             <Route path="/login" element={<Login />} />
-                            <Route path="/chat" element={<Chat />} />
-                            <Route path="/settings" element={<Settings />} />
+
+                            <Route
+                                path="/chat"
+                                element={
+                                    <ProtectedRoute>
+                                        <Chat />
+                                    </ProtectedRoute>
+                                }
+                            />
+
+                            <Route
+                                path="/settings"
+                                element={
+                                    <ProtectedRoute>
+                                        <Settings />
+                                    </ProtectedRoute>
+                                }
+                            />
                         </Routes>
                     </section>
                 </BrowserRouter>

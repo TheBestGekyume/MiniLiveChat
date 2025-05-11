@@ -22,6 +22,7 @@ export const AuthProvider = ({ children }: any) => {
         setToken(null);
         setUsername(null);
         setId(null);
+        console.log(token);
     };
 
     return (
