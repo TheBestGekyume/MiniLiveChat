@@ -12,12 +12,14 @@ function Settings() {
     let [username, setUsername] = useState("");
     let [password, setPassword] = useState("");
     const [userData, setUserData] = useState({ username: "", email: "" });
+    const [alertMessage, setAlertMessage] = useState("");
+    const [showAlert, setShowAlert] = useState(false);
     let [error, setError] = useState("");
     const apiUrl = "http://localhost:3000/";
     const endpoint = "user/";
     const id = localStorage.getItem("id");
     const { setAuth } = useContext(AuthContext);
-    const { logout } = useContext(AuthContext);
+    const { contextLogOut } = useContext(AuthContext);
 
     useEffect(() => {
         const getUserData = async () => {
@@ -37,9 +39,10 @@ function Settings() {
         getUserData();
     }, []);
 
-    const logOut = () =>{
-        logout()
-    }
+    const logOut = () => {
+        contextLogOut();
+        triggerAlert("Sessão encerrada!");
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -54,12 +57,13 @@ function Settings() {
             console.log(updateResponse.data);
             const { token, user } = updateResponse.data;
             setAuth(token, user.username, user.id);
-            alert("Alteração Realizada com Sucesso");
+            triggerAlert("Informações atualizadas com sucesso!");
         } catch (err: any) {
             setError(
-                err.updateResponse?.data?.error || "Erro no login ou cadastro."
+                err.updateResponse?.data?.error || "Erro ao atualizar informações!"
             );
-            console.log(error);
+
+            triggerAlert(err);
         }
     };
 
@@ -69,8 +73,26 @@ function Settings() {
         );
     };
 
+    const triggerAlert = (text: string) => {
+        setAlertMessage(text);
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 5000);
+    };
+
     return (
         <section id="settings">
+            {showAlert && (
+                <motion.div
+                    initial={{ opacity: 0, y: -15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    transition={{ duration: 0.3 }}
+                    className="alert-message"
+                >
+                    {alertMessage}
+                </motion.div>
+            )}
+
             <div className="option">
                 <h3>Alterar Informações</h3>
                 <motion.div
@@ -127,7 +149,6 @@ function Settings() {
                                     onChange={(e) =>
                                         setPassword(e.target.value)
                                     }
-                                    required
                                 />
                             </fieldset>
                         </div>
