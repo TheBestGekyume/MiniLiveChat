@@ -1,12 +1,37 @@
-// AuthContext.tsx
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect, ReactNode } from "react";
 
-export const AuthContext = createContext<any>(null);
+interface AuthContextType {
+    token: string | null;
+    username: string | null;
+    id: string | null;
+    setAuth: (token: string, username: string, id: string) => void;
+    logout: () => void;
+}
 
-export const AuthProvider = ({ children }: any) => {
-    const [token, setToken] = useState(localStorage.getItem("token"));
-    const [username, setUsername] = useState(localStorage.getItem("username"));
-    const [id, setId] = useState(localStorage.getItem("id"));
+export const AuthContext = createContext<AuthContextType>({
+    token: null,
+    username: null,
+    id: null,
+    setAuth: () => {},
+    logout: () => {},
+});
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+    const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
+    const [username, setUsername] = useState<string | null>(localStorage.getItem("username"));
+    const [id, setId] = useState<string | null>(localStorage.getItem("id"));
+    
+    useEffect(() => {
+        const savedToken = localStorage.getItem("token");
+        const savedUsername = localStorage.getItem("username");
+        const savedId = localStorage.getItem("id");
+
+        if (savedToken && savedUsername && savedId) {
+            setToken(savedToken);
+            setUsername(savedUsername);
+            setId(savedId);
+        }
+    }, []);
 
     const setAuth = (token: string, username: string, id: string) => {
         localStorage.setItem("token", token);
@@ -22,7 +47,6 @@ export const AuthProvider = ({ children }: any) => {
         setToken(null);
         setUsername(null);
         setId(null);
-        console.log(token);
     };
 
     return (
