@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const db = require('../../configuration/database');
 const jwt = require('jsonwebtoken');
 const secret = process.env.JWT_SECRET;
-const saltRounds = process.env.SALT_ROUNDS;
+const saltRounds = Number(process.env.SALT_ROUNDS);
 
 
 module.exports = (req, res) => {
