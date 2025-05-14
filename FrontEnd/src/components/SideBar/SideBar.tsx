@@ -12,7 +12,7 @@ const Sidebar: React.FC = () => {
         <aside id="sidebar">
             <nav>
                 <div className="link_container">
-                    <NavLink
+                    {/* <NavLink
                         to="/home"
                         className={({ isActive }) =>
                             isActive ? "nav_link active" : "nav_link"
@@ -20,7 +20,7 @@ const Sidebar: React.FC = () => {
                     >
                         <Home size={24} />
                         <span>Início</span>
-                    </NavLink>
+                    </NavLink> */}
 
                     <NavLink
                         to="/chat"
