@@ -1,15 +1,15 @@
 const jwt = require('jsonwebtoken');
-const secret = JWT_SECRET;
+const secret = process.env.JWT_SECRET;
 
 function authMiddleware(req, res, next) {
-    const token = req.headers['authorization'];
-    if (!token) {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
         return res.status(401).json({ error: 'Token não fornecido' });
     }
 
     try {
-        const validToken = token.split(' ')[1];
-        const decoded = jwt.verify(validToken, secret);
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, secret);
         req.user = decoded;
         next();
     } catch (error) {
