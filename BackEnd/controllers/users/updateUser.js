@@ -1,58 +1,49 @@
 const bcrypt = require('bcrypt');
-const db = require('../../configuration/database');
+const pool = require('../../configuration/database');
 const jwt = require('jsonwebtoken');
 const secret = process.env.JWT_SECRET;
 const saltRounds = Number(process.env.SALT_ROUNDS);
 
-
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
     const { id } = req.params;
     const { username, password, email, role } = req.body;
 
-    // Primeiro, buscar os dados atuais do usuário
-    db.query('SELECT * FROM users WHERE id = ?', [id], (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
-        if (results.length === 0) return res.status(404).json({ error: 'Usuário não encontrado' });
+    try {
+        const results = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+        if (results.rows.length === 0) return res.status(404).json({ error: 'Usuário não encontrado' });
 
-        const currentUser = results[0];
-
+        const currentUser = results.rows[0];
         const updatedUsername = username || currentUser.username;
         const updatedEmail = email || currentUser.email;
         const updatedRole = role !== undefined ? role : currentUser.role;
 
+        let updatedPassword = currentUser.password;
+
         if (password) {
-            bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
-                if (err) return res.status(500).json({ error: 'Erro ao gerar hash da senha' });
-                executeUpdate(updatedUsername, hashedPassword, updatedEmail, updatedRole);
-            });
-        } else {
-            executeUpdate(updatedUsername, currentUser.password, updatedEmail, updatedRole);
+            updatedPassword = await bcrypt.hash(password, saltRounds);
         }
-    });
 
-    function executeUpdate(username, password, email, role) {
-        const sql = 'UPDATE users SET username = ?, password = ?, email = ?, role = ? WHERE id = ?';
-        const values = [username, password, email, role, id];
+        const sql = 'UPDATE users SET username = $1, password = $2, email = $3, role = $4 WHERE id = $5';
+        const values = [updatedUsername, updatedPassword, updatedEmail, updatedRole, id];
 
-        db.query(sql, values, (err, result) => {
-            if (err) return res.status(500).json({ error: err.message });
+        await pool.query(sql, values);
 
-            db.query('SELECT id, username, email FROM users WHERE id = ?', [id], (err, rows) => {
-                if (err) return res.status(500).json({ error: err.message });
+        const userResult = await pool.query('SELECT id, username, email FROM users WHERE id = $1', [id]);
+        const user = userResult.rows[0];
 
-                const user = rows[0];
-                const updatedToken = jwt.sign(
-                    { id: user.id, name: user.username, email: user.email },
-                    secret,
-                    { expiresIn: "1h" }
-                );
+        const updatedToken = jwt.sign(
+            { id: user.id, name: user.username, email: user.email },
+            secret,
+            { expiresIn: "1h" }
+        );
 
-                return res.json({
-                    message: 'Usuário atualizado!',
-                    token: updatedToken,
-                    user: { id: user.id, username: user.username }
-                });
-            });
+        return res.json({
+            message: 'Usuário atualizado!',
+            token: updatedToken,
+            user: { id: user.id, username: user.username }
         });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };

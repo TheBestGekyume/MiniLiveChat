@@ -1,28 +1,31 @@
 const bcrypt = require('bcrypt');
-const db = require('../../configuration/database');
+const pool = require('../../configuration/database');
 const saltRounds = 10;
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
     const { username, password, email, role } = req.body;
 
     if (!username || !password || !email) {
         return res.status(400).json({ error: 'Preencha username, password e email' });
     }
 
-    bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
-        if (err) return res.status(500).json({ error: 'Erro ao gerar hash da senha' });
+    try {
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        const sql = role 
-            ? 'INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)' 
-            : 'INSERT INTO users (username, password, email) VALUES (?, ?, ?)';
+        let sql;
+        let values;
 
-        const values = role 
-            ? [username, hashedPassword, email, role] 
-            : [username, hashedPassword, email];
+        if (role) {
+            sql = 'INSERT INTO users (username, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id';
+            values = [username, hashedPassword, email, role];
+        } else {
+            sql = 'INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id';
+            values = [username, hashedPassword, email];
+        }
 
-        db.query(sql, values, (err, result) => {
-            if (err) return res.status(500).json({ error: err.message });
-            res.status(201).json({ message: 'Usuário criado!', userId: result.insertId });
-        });
-    });
+        const result = await pool.query(sql, values);
+        res.status(201).json({ message: 'Usuário criado!', userId: result.rows[0].id });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 };
