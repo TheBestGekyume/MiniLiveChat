@@ -1,13 +1,13 @@
 import { useEffect, useState, useContext } from "react";
 import { motion } from "framer-motion";
-import axios from "axios";
+import { AuthContext } from "../../context/AuthContext";
 
 import EditForm from "../../components/EditForm/EditForm";
 import SettingsOptions from "../../components/SettingOptions/SettingOptions";
-import { AuthContext } from "../../context/AuthContext";
+
+import { getUser } from "../../services/userService";
 
 import "./Settings.scss";
-
 function Settings() {
   const [openedSessions, setOpenedSessions] = useState([false, false, false]);
   const [userData, setUserData] = useState({ username: "", email: "" });
@@ -17,22 +17,23 @@ function Settings() {
   const id = localStorage.getItem("id");
 
   useEffect(() => {
-    const fetchUser = async () => {
+    if (!id) return;
+    const fetchUserData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/user/${id}`);
-        const user = response.data;
+        const user = await getUser(id);
         setUserData({ username: user.username, email: user.email });
       } catch (err) {
         triggerAlert("Erro ao buscar usuário!");
       }
     };
-    fetchUser();
-  }, []);
+    fetchUserData();
+  }, [id]);
 
   const toggleSession = (index: number) => {
-    setOpenedSessions((prev) => prev.map((value, i) => (i === index ? !value : value)));
+    setOpenedSessions((prev) =>
+      prev.map((open, i) => (i === index ? !open : open))
+    );
   };
-
   const triggerAlert = (text: string) => {
     setAlertMessage(text);
     setShowAlert(true);

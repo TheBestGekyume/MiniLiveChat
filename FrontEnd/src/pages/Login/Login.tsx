@@ -2,9 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../../context/AuthContext";
-import axios from "axios";
+import { loginUser, registerUser } from "../../services/userService";
 import "./login.scss";
-
 
 function Login() {
     let [hasAccount, setHasAccount] = useState(true);
@@ -12,7 +11,6 @@ function Login() {
     let [username, setUsername] = useState("");
     let [password, setPassword] = useState("");
     let [error, setError] = useState("");
-    const apiUrl = "http://localhost:3000";
     const navigate = useNavigate();
 
     const { setAuth } = useContext(AuthContext);
@@ -22,18 +20,12 @@ function Login() {
         setError("");
 
         try {
-            const endpoint = hasAccount ? "/login" : "/user";
-            const response = await axios.post(
-                `${apiUrl}${endpoint}`,
-                { username, email, password },
-                { withCredentials: true }
-            );
-
             if (hasAccount) {
-                const { token, user} = response.data;
+                const { token, user } = await loginUser({ email, password });
                 setAuth(token, user.username, user.id);
                 navigate("/chat");
             } else {
+                await registerUser({ username, email, password });
                 alert("Cadastro realizado com sucesso!");
                 setHasAccount(true);
             }
