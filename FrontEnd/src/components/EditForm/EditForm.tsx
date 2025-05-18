@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { updateUser } from "../../services/userService";
+
 interface Props {
     userData: { username: string; email: string };
     triggerAlert: (msg: string) => void;
@@ -10,14 +11,11 @@ function EditForm({ userData, triggerAlert }: Props) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const { setAuth } = useContext(AuthContext);
-    const endpoint = "user/";
     const id = localStorage.getItem("id");
+    const { setAuth } = useContext(AuthContext);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError("");
 
         try {
             const response = await updateUser(id!, {
@@ -29,8 +27,8 @@ function EditForm({ userData, triggerAlert }: Props) {
             setAuth(token, user.username, user.id);
             triggerAlert("Informações atualizadas com sucesso!");
         } catch (err: any) {
-            const msg = err.response?.data?.error || "Erro ao atualizar informações!";
-            setError(msg);
+            const msg =
+                err.response?.data?.error || "Erro ao atualizar informações!";
             triggerAlert(msg);
         }
     };
