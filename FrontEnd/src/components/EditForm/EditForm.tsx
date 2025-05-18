@@ -26,10 +26,12 @@ function EditForm({ userData, triggerAlert }: Props) {
             const { token, user } = response;
             setAuth(token, user.username, user.id);
             triggerAlert("Informações atualizadas com sucesso!");
-        } catch (err: any) {
-            const msg =
-                err.response?.data?.error || "Erro ao atualizar informações!";
-            triggerAlert(msg);
+        } catch (err) {
+            if (err instanceof Error) {
+                triggerAlert(err.message);
+            } else {
+                triggerAlert("Erro ao atualizar informações.");
+            }
         }
     };
 

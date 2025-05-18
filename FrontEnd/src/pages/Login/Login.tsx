@@ -1,16 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
+import { AxiosError } from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../../context/AuthContext";
 import { loginUser, registerUser } from "../../services/userService";
 import "./login.scss";
 
 function Login() {
-    let [hasAccount, setHasAccount] = useState(true);
-    let [email, setEmail] = useState("");
-    let [username, setUsername] = useState("");
-    let [password, setPassword] = useState("");
-    let [error, setError] = useState("");
+    const [hasAccount, setHasAccount] = useState(true);
+    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
     const { setAuth } = useContext(AuthContext);
@@ -29,8 +30,20 @@ function Login() {
                 alert("Cadastro realizado com sucesso!");
                 setHasAccount(true);
             }
-        } catch (err: any) {
-            setError(err.response?.data?.error || "Erro no login ou cadastro.");
+        } catch (err) {
+            if (err && (err as AxiosError).isAxiosError) {
+                const axiosError = err as AxiosError<{
+                    error?: string;
+                    message?: string;
+                }>;
+                const message =
+                    axiosError.response?.data?.error ||
+                    axiosError.response?.data?.message ||
+                    "Credenciais inválidas. Verifique e tente novamente.";
+                setError(message);
+            } else {
+                setError("Erro inesperado no login ou cadastro.");
+            }
         }
     };
 
